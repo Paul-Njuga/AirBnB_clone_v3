@@ -11,4 +11,4 @@ export HBNB_MYSQL_DB=hbnb_test_db
 export HBNB_TYPE_STORAGE=db
 
 # Set Python path
-# export PYTHONPATH=`(pwd)`
+export PYTHONPATH=`(pwd)`
