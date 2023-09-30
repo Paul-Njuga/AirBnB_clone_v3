@@ -1,9 +1,8 @@
 #!/usr/bin/python3
 """View for State objects that handles all default RESTFul API actions"""
 from api.v1.views import app_views
-from flask import make_response, jsonify, abort, request
+from flask import jsonify, abort, request
 from models import storage
-from models.state import State
 from models.city import City
 
 
@@ -12,7 +11,7 @@ def get_state_cities(state_id):
     """Retrives list of all City objects in a State"""
     cities = storage.all(City).values()
     cities_list = []
-    state = storage.get(State, state_id)
+    state = storage.get('State', state_id)
     if state is None:
         abort(404)
     for city in cities:
@@ -45,7 +44,7 @@ def delete_city_id(city_id):
 def create_city(state_id):
     """Creates a new city"""
     rsp_dict = request.get_json()
-    state = storage.get(State, state_id)
+    state = storage.get('State', state_id)
     if not state:
         abort(404)
     if not rsp_dict:
@@ -55,7 +54,7 @@ def create_city(state_id):
 
     # Create new state and save it
     rsp_dict['state_id'] = state_id
-    new_city = State(**rsp_dict)
+    new_city = City(**rsp_dict)
     storage.new(new_city)
     storage.save()
     return jsonify(new_city.to_dict()), 201
