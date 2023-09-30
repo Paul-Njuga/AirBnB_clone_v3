@@ -1,10 +1,9 @@
 #!/usr/bin/python3
 """View for State objects that handles all default RESTFul API actions"""
-from flask import jsonify, abort, request
-
 from api.v1.views import app_views
-from models.state import State
+from flask import jsonify, abort, request
 from models import storage
+from models.state import State
 
 
 @app_views.route('/states', methods=['GET'])
@@ -16,7 +15,7 @@ def get_states():
     # Append object dict to list
     for state in all_states:
         states_list.append(state.to_dict())
-    return jsonify(states_list)
+    return jsonify(states_list), 200
 
 
 @app_views.route('/states/<state_id>', methods=['GET'])
@@ -25,7 +24,7 @@ def get_state_by_id(state_id):
     state = storage.get(State, state_id)
     if state is None:
         abort(404)
-    return jsonify(state.to_dict())
+    return jsonify(state.to_dict()), 200
 
 
 @app_views.route('/states/<state_id>', methods=['GET', 'DELETE'])
@@ -35,16 +34,17 @@ def delete_state(state_id):
     if state is None:
         abort(404)
     storage.delete(state)
-    return jsonify({})
+    storage.save()
+    return jsonify({}), 200
 
 
 @app_views.route('/states', methods=['POST'])
 def create_state():
     """Creates a new state"""
     state = request.get_json()
-    if not request.json:
+    if not state:
         abort(404, 'Not a JSON')
-    if 'name' not in request.json:
+    if 'name' not in state:
         abort(404, 'Missing name')
 
     # Create new state and save it
@@ -58,8 +58,8 @@ def create_state():
 def update_state(state_id):
     """Updates state based on ID"""
     response = request.get_json()
-    if not request.json:
-        abort(404, 'Not a JSON')
+    if not response:
+        abort(400, 'Not a JSON')
     state = storage.get(State, state_id)
     if state is None:
         abort(404)
