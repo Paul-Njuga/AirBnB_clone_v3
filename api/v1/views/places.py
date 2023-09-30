@@ -15,8 +15,8 @@ def get_city_place(city_id):
     if city is None:
         abort(404)
     for place in places:
-            if place.to_dict()['city_id'] == city_id:
-                places_list.append(place.to_dict())
+        if place.to_dict()['city_id'] == city_id:
+            places_list.append(place.to_dict())
     return jsonify(places_list), 200
 
 
