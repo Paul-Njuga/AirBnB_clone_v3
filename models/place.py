@@ -2,6 +2,8 @@
 """ holds class Place"""
 import models
 from models.base_model import BaseModel, Base
+from models.amenity import Amenity
+from models.review import Review
 from os import getenv
 import sqlalchemy
 from sqlalchemy import Column, String, Integer, Float, ForeignKey, Table
@@ -54,25 +56,23 @@ class Place(BaseModel, Base):
         """initializes Place"""
         super().__init__(*args, **kwargs)
 
-    if models.storage_t != 'db':
+    if getenv("HBNB_TYPE_STORAGE") != "db":
         @property
         def reviews(self):
-            """getter attribute returns the list of Review instances"""
-            from models.review import Review
-            review_list = []
-            all_reviews = models.storage.all(Review)
-            for review in all_reviews.values():
-                if review.place_id == self.id:
-                    review_list.append(review)
-            return review_list
+            """Reviews getter attribute for file storage"""
+            return [review for review
+                    in models.storage.all(Review)
+                    if review.place_id == self.id]
 
         @property
         def amenities(self):
-            """getter attribute returns the list of Amenity instances"""
-            from models.amenity import Amenity
-            amenity_list = []
-            all_amenities = models.storage.all(Amenity)
-            for amenity in all_amenities.values():
-                if amenity.place_id == self.id:
-                    amenity_list.append(amenity)
-            return amenity_list
+            """Amenities getter attribute for file storage"""
+            return [amenity for amenity
+                    in models.storage.all(Amenity)
+                    if amenity.id == self.amenity_ids]
+
+        @amenities.setter
+        def amenities(self, obj):
+            """Setter method for amenities"""
+            if (type(obj) == Amenity):
+                self.amenity_ids.append(obj.id)
