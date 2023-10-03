@@ -49,7 +49,7 @@ def delete_amenity_id(place_id, amenity_id):
 
 
 @app_views.route('/places/<place_id>/amenities/<amenity_id>', methods=['POST'])
-def create_amenity(amenity_id, place_id):
+def create_place_amenity(place_id, amenity_id):
     """Creates a new Amenity"""
     place = storage.get('Place', place_id)
     amenity = storage.get(Amenity, amenity_id)
